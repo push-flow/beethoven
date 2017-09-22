@@ -1,0 +1,31 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "containerDefinitions": [
+    {
+      "name": "bothub-proxy-dev",
+      "image": "vctrferreira/beethoven-dev",
+      "essential": true,
+      "memoryReservation": 512,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 80
+        }
+      ],
+      "environment": [
+        {
+          "name": "REDIS_MASTER_ADDRESS",
+          "value": "0.0.0.0"
+        },
+        {
+          "name": "REDIS_MASTER_PORT",
+          "value": "6379"
+        },
+        {
+          "name": "REDIS_MASTER_DB",
+          "value": "2"
+        }
+      ]
+    }
+  ]
+}
