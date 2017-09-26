@@ -37,6 +37,8 @@ COPY nginx-openresty.conf ${BASE_PATH}/nginx-openresty.conf
 COPY supervisor-app.conf /etc/supervisor/conf.d/
 
 COPY entrypoint.sh ${BASE_PATH}
+
+COPY routers/ ${BASE_PATH}/routers
 RUN chmod +x ${BASE_PATH}/entrypoint.sh
 
 ENTRYPOINT ${BASE_PATH}/entrypoint.sh
