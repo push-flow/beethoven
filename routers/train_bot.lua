@@ -15,7 +15,7 @@ end
 
 red:select(tonumber(os.getenv("REDIS_MASTER_DB")))
 
-local servers = red:get("SERVERS_INSTANCES")
+local servers = red:get("SERVERS_INSTANCES_AVAILABLE")
 servers, err = ngx_re.split(servers, " ")
 
 ngx.var.proxy_addr = servers[1]

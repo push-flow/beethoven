@@ -15,16 +15,20 @@ end
 red:select(tonumber(os.getenv("REDIS_MASTER_DB")))
 
 function new_proxy()
-    local servers = red:get("SERVERS_INSTANCES")
-    servers, err = ngx_re.split(servers, " ")
+    local servers = red:get("SERVERS_INSTANCES_AVAILABLE")
+    if not servers == ngx.null then
+        servers, err = ngx_re.split(servers, " ")
 
-    proxy = servers[1]
-    table.remove(servers, 1)
-    table.insert(servers, proxy)
-    servers = table.concat(servers, " ")
-    red:set("SERVERS_INSTANCES", servers)
+        proxy = servers[1]
+        table.remove(servers, 1)
+        table.insert(servers, proxy)
+        servers = table.concat(servers, " ")
+        red:set("SERVERS_INSTANCES_AVAILABLE", servers)
 
-    return proxy
+        return proxy
+    else
+        ngx.say("No servers available (memory full)")
+    end
 end
 
 function remove_server_instance(server_ip)
@@ -35,7 +39,7 @@ function remove_server_instance(server_ip)
     end
     red:del("SERVER-" .. server_ip)
 
-    local servers = red:get("SERVERS_INSTANCES")
+    local servers = red:get("SERVERS_INSTANCES_AVAILABLE")
     servers, err = ngx_re.split(servers, " ")
 
     for index, server in ipairs(servers) do
