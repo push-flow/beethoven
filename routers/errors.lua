@@ -13,7 +13,6 @@ if not ok then
 end
 
 red:select(tonumber(os.getenv("REDIS_MASTER_DB")))
-
 function new_proxy()
     local servers = red:get("SERVERS_INSTANCES_AVAILABLES")
     if not (servers == ngx.null) then
@@ -52,15 +51,17 @@ function remove_server_instance(server_ip)
     red:set("SERVERS_INSTANCES_AVAILABLES", servers)
 end
 
-local proxy = red:get("BOT-" .. ngx.var.arg_uuid)
-if proxy == ngx.null then
-    proxy = new_proxy()
-else
-    local check_server_alive = red:get("SERVER-ALIVE-" .. proxy)
+function get_proxy_alive(p)
+    local check_server_alive = red:get("SERVER-ALIVE-" .. p)
     if check_server_alive == ngx.null then
-        remove_server_instance(proxy)
-        proxy = new_proxy()
+        remove_server_instance(p)
+        get_proxy_alive(new_proxy())
+    else
+        return proxy
     end
 end
+
+local proxy = get_proxy_alive(new_proxy())
+
 
 ngx.var.proxy_addr = proxy
