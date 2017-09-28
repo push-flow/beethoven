@@ -16,7 +16,7 @@ red:select(tonumber(os.getenv("REDIS_MASTER_DB")))
 
 function new_proxy()
     local servers = red:get("SERVERS_INSTANCES_AVAILABLES")
-    if not servers == ngx.null then
+    if not (servers == ngx.null) then
         servers, err = ngx_re.split(servers, " ")
 
         proxy = servers[1]
