@@ -15,17 +15,11 @@ end
 
 red:select(tonumber(os.getenv("REDIS_MASTER_DB")))
 
-function new_proxy()
+function new_proxy_train()
     local servers = red:get("SERVERS_INSTANCES_AVAILABLES")
     if not (servers == ngx.null) then
         servers, err = ngx_re.split(servers, " ")
-
         proxy = servers[1]
-        table.remove(servers, 1)
-        table.insert(servers, proxy)
-        servers = table.concat(servers, " ")
-        red:set("SERVERS_INSTANCES_AVAILABLES", servers)
-
         return proxy
     else
         ngx.say("No servers availables (memory full)")
@@ -57,12 +51,12 @@ function get_proxy_alive(p)
     local check_server_alive = red:get("SERVER-ALIVE-" .. p)
     if check_server_alive == ngx.null then
         remove_server_instance(p)
-        get_proxy_alive(new_proxy())
+        return get_proxy_alive(new_proxy_train())
     else
-        return proxy
+        return p
     end
 end
 
-local proxy = get_proxy_alive(new_proxy())
+local proxy = get_proxy_alive(new_proxy_train())
 
 ngx.var.proxy_addr = proxy

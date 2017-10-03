@@ -18,8 +18,7 @@ function new_proxy()
     local servers = red:get("SERVERS_INSTANCES_AVAILABLES")
     if not (servers == ngx.null) then
         servers, err = ngx_re.split(servers, " ")
-
-        proxy = servers[1]
+        local proxy = servers[1]
         table.remove(servers, 1)
         table.insert(servers, proxy)
         servers = table.concat(servers, " ")
@@ -56,20 +55,17 @@ function get_proxy_alive(p)
     local check_server_alive = red:get("SERVER-ALIVE-" .. p)
     if check_server_alive == ngx.null then
         remove_server_instance(p)
-        get_proxy_alive(new_proxy())
+        return get_proxy_alive(new_proxy())
     else
-        return proxy
+        return p
     end
 end
 
 local proxy = red:get("BOT-" .. ngx.var.arg_uuid)
 if proxy == ngx.null then
-    proxy = new_proxy()
+    proxy = get_proxy_alive(new_proxy())
 else
-    local check_server_alive = red:get("SERVER-ALIVE-" .. proxy)
-    if check_server_alive == ngx.null then
-        proxy = get_proxy_alive(new_proxy())
-    end
+    proxy = get_proxy_alive(proxy)
 end
 
 ngx.var.proxy_addr = proxy

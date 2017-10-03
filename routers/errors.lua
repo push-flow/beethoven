@@ -55,9 +55,9 @@ function get_proxy_alive(p)
     local check_server_alive = red:get("SERVER-ALIVE-" .. p)
     if check_server_alive == ngx.null then
         remove_server_instance(p)
-        get_proxy_alive(new_proxy())
+        return get_proxy_alive(new_proxy())
     else
-        return proxy
+        return p
     end
 end
 
