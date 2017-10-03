@@ -52,14 +52,23 @@ function remove_server_instance(server_ip)
     red:set("SERVERS_INSTANCES_AVAILABLES", servers)
 end
 
+function get_proxy_alive(p)
+    local check_server_alive = red:get("SERVER-ALIVE-" .. p)
+    if check_server_alive == ngx.null then
+        remove_server_instance(p)
+        get_proxy_alive(new_proxy())
+    else
+        return proxy
+    end
+end
+
 local proxy = red:get("BOT-" .. ngx.var.arg_uuid)
 if proxy == ngx.null then
     proxy = new_proxy()
 else
     local check_server_alive = red:get("SERVER-ALIVE-" .. proxy)
     if check_server_alive == ngx.null then
-        remove_server_instance(proxy)
-        proxy = new_proxy()
+        proxy = get_proxy_alive(new_proxy())
     end
 end
 
