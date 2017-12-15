@@ -61,7 +61,7 @@ function get_proxy_alive(p)
     end
 end
 
-local proxy = red:get("BOT-" .. ngx.var.arg_uuid)
+local proxy = red:get("BOT-" .. ngx.var.arg_bot)
 if proxy == ngx.null then
     proxy = get_proxy_alive(new_proxy())
 else
